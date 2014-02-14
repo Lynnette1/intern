@@ -1,0 +1,129 @@
+<html>
+<body>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+
+<div id="load_data">
+	 
+</div>
+<div id="two">
+
+	</div>
+<div id="three">
+	<p><b>Percentage % of Broken water points per community</b></p>
+
+	</div>
+</body>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+checker();
+  
+questionOne()		
+});
+{
+  $.ajax({
+                             url: 'data.json',
+                             dataType: "json",
+                             success: function (result) {
+							 var j = 0; 
+								$.each(result, function(i, data){
+                                     if(data.water_point_condition == "functioning"){
+										j++;
+                                                                   
+										
+									   }
+                               });
+							   $("#load_data").html("The number of water points that are functional is :"+ j);
+                             }
+                       });
+}
+function questionTwo(communities_villages){
+	
+					//var communities_villages=checker();
+				
+			         var uniqueArray=jQuery.unique(communities_villages);
+			         //console.log(uniqueArray);
+			         $.ajax({
+				      url: 'data.json',
+				      dataType: "json",
+				      success: function (result_array) {
+				      	var finalArray =[];
+				       $.each(result_array, function(i, data){
+				       		finalArray.push( data.communities_villages);
+
+				       });	
+				       console.log(finalArray);
+				       var succces_array=[];
+				       
+				       $.each(uniqueArray, function(i,data){
+				       		var numOccurences = $.grep(finalArray, function (elem) {
+								    return elem === data;
+								}).length;
+				       		$("#two").append("<p>");
+				       		$("#two").append( data + " has " + numOccurences + " water point(s)");
+				       		$("#two").append("</p>");
+				       		
+				       });	
+				       questionThree(uniqueArray);
+			
+				      }
+			});
+
+			        
+			      }
+
+function checker(){
+	
+
+		$.ajax({
+			      url: 'data.json',
+			      dataType: "json",
+			      success: function (result) {
+			      	var resultArray =[];
+			       $.each(result, function(i, data){
+			       		resultArray.push( data.communities_villages);
+
+			       });		
+			       questionTwo(resultArray);
+			       //questionThree(resultArray);					
+		
+			      }
+			});
+		
+		
+}
+function questionThree(unique_communites){
+			$.ajax({
+			      url: 'data.json',
+			      dataType: "json",
+			      success: function (result) {
+			      	var wateArray=[];
+			      	var it=0;
+			      	$.each(result, function(i, data){
+							    if(data.water_point_condition == "broken"){
+							    	wateArray.push(data.communities_villages);
+									it++;
+							    }
+							    
+							});	
+			      	//alert(it);
+			      	  $.each(unique_communites, function(i,data){
+				       		var Occurences = $.grep(wateArray, function (elem) {
+								    return elem === data;
+								}).length;
+				       		if(Occurences > 0){
+				       		$("#three").append("<p>");
+				       		$("#three").append( data + " has " + (Occurences/it) * 100 + " % of the total broken water points");
+				       		$("#three").append("</p>");
+							}
+			      	});	
+				}
+
+
+			});
+		
+}
+</script>
+
